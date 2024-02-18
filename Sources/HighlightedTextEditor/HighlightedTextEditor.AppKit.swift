@@ -25,12 +25,14 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
     }
 
     let highlightRules: [HighlightRule]
+    let highlightEditor: HighlightedTextEditor
 
     private(set) var onEditingChanged: OnEditingChangedCallback?
     private(set) var onCommit: OnCommitCallback?
     private(set) var onTextChange: OnTextChangeCallback?
     private(set) var onSelectionChange: OnSelectionChangeCallback?
     private(set) var introspect: IntrospectCallback?
+    private(set) var customize: CustomizeCallback?
 
     public init(
         text: Binding<String>,
@@ -38,6 +40,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
     ) {
         _text = text
         self.highlightRules = highlightRules
+        self.highlightEditor = HighlightedTextEditor()
     }
 
     public func makeCoordinator() -> Coordinator {
@@ -48,6 +51,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
         let textView = ScrollableTextView()
         textView.delegate = context.coordinator
         runIntrospect(textView)
+        runCustomize()
 
         return textView
     }
@@ -56,7 +60,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
         context.coordinator.updatingNSView = true
         let typingAttributes = view.textView.typingAttributes
 
-        let highlightedText = HighlightedTextEditor.getHighlightedText(
+        let highlightedText = highlightEditor.getHighlightedText(
             text: text,
             highlightRules: highlightRules
         )
@@ -72,6 +76,11 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
         guard let introspect = introspect else { return }
         let internals = Internals(textView: view.textView, scrollView: view.scrollView)
         introspect(internals)
+    }
+
+    private func runCustomize(_ view: ScrollableTextView) {
+        guard let customize = customize else { return }
+        customize(highlightEditor)
     }
 }
 
@@ -274,6 +283,12 @@ public extension HighlightedTextEditor {
             guard let range = ranges.first else { return }
             callback(range)
         }
+        return editor
+    }
+
+    func customize(_ callback: @escaping CustomizeCallback) -> Self {
+        var editor = self
+        editor.customize = callback
         return editor
     }
 }

@@ -96,17 +96,17 @@ public typealias IntrospectCallback = (_ editor: HighlightedTextEditor.Internals
 public typealias EmptyCallback = () -> Void
 public typealias OnCommitCallback = EmptyCallback
 public typealias OnEditingChangedCallback = EmptyCallback
+public typealias CustomizeCallback = (_ editor: HighlightedTextEditor) -> Void
 public typealias OnTextChangeCallback = (_ editorContent: String) -> Void
 
 extension HighlightingTextEditor {
     var placeholderFont: SystemColorAlias { SystemColorAlias() }
+    var editorFont: SystemFontAlias = defaultEditorFont
+    var editorTextColor: SystemColorAlias = defaultEditorTextColor
 
     static func getHighlightedText(text: String, highlightRules: [HighlightRule]) -> NSMutableAttributedString {
         let highlightedString = NSMutableAttributedString(string: text)
         let all = NSRange(location: 0, length: text.utf16.count)
-
-        let editorFont = defaultEditorFont
-        let editorTextColor = defaultEditorTextColor
 
         highlightedString.addAttribute(.font, value: editorFont, range: all)
         highlightedString.addAttribute(.foregroundColor, value: editorTextColor, range: all)
