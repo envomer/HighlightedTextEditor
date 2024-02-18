@@ -99,7 +99,7 @@ public typealias OnEditingChangedCallback = EmptyCallback
 public typealias CustomizeCallback = (_ editor: HighlightingTextEditorParser) -> Void
 public typealias OnTextChangeCallback = (_ editorContent: String) -> Void
 
-class HighlightingTextEditorParser {
+public class HighlightingTextEditorParser {
     var placeholderFont: SystemColorAlias { SystemColorAlias() }
     var editorFont: SystemFontAlias = defaultEditorFont
     var editorTextColor: SystemColorAlias = defaultEditorTextColor
