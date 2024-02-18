@@ -25,7 +25,6 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
     }
 
     let highlightRules: [HighlightRule]
-    let parser: HighlightingTextEditorParser
 
     private(set) var onEditingChanged: OnEditingChangedCallback?
     private(set) var onCommit: OnCommitCallback?
@@ -40,7 +39,6 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
     ) {
         _text = text
         self.highlightRules = highlightRules
-        self.parser = HighlightingTextEditorParser()
     }
 
     public func makeCoordinator() -> Coordinator {
@@ -51,7 +49,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
         let textView = ScrollableTextView()
         textView.delegate = context.coordinator
         runIntrospect(textView)
-        runCustomize()
+        runCustomize(context.coordinator.parser)
 
         return textView
     }
@@ -60,7 +58,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
         context.coordinator.updatingNSView = true
         let typingAttributes = view.textView.typingAttributes
 
-        let highlightedText = parser.getHighlightedText(
+        let highlightedText = context.coordinator.parser.getHighlightedText(
             text: text,
             highlightRules: highlightRules
         )
@@ -78,7 +76,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
         introspect(internals)
     }
 
-    private func runCustomize() {
+    private func runCustomize(_ parser: HighlightingTextEditorParser) {
         guard let customize = customize else { return }
         customize(parser)
     }
@@ -89,9 +87,11 @@ public extension HighlightedTextEditor {
         var parent: HighlightedTextEditor
         var selectedRanges: [NSValue] = []
         var updatingNSView = false
+        let parser: HighlightingTextEditorParser
 
         init(_ parent: HighlightedTextEditor) {
             self.parent = parent
+            self.parser = HighlightingTextEditorParser()
         }
 
         public func textView(
