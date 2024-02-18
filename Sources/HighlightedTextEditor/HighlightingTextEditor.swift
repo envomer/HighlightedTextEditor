@@ -100,9 +100,9 @@ public typealias CustomizeCallback = (_ editor: HighlightingTextEditorParser) ->
 public typealias OnTextChangeCallback = (_ editorContent: String) -> Void
 
 public class HighlightingTextEditorParser {
-    var placeholderFont: SystemColorAlias { SystemColorAlias() }
-    var editorFont: SystemFontAlias = defaultEditorFont
-    var editorTextColor: SystemColorAlias = defaultEditorTextColor
+    public var placeholderFont: SystemColorAlias { SystemColorAlias() }
+    public var editorFont: SystemFontAlias = defaultEditorFont
+    public var editorTextColor: SystemColorAlias = defaultEditorTextColor
 
     func getHighlightedText(text: String, highlightRules: [HighlightRule]) -> NSMutableAttributedString {
         let highlightedString = NSMutableAttributedString(string: text)
