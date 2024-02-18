@@ -22,7 +22,6 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
     }
 
     let highlightRules: [HighlightRule]
-    let parser: HighlightingTextEditorParser
 
     private(set) var onEditingChanged: OnEditingChangedCallback?
     private(set) var onCommit: OnCommitCallback?
@@ -48,7 +47,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         textView.delegate = context.coordinator
         updateTextViewModifiers(textView)
         runIntrospect(textView)
-        runCustomize()
+        runCustomize(context.coordinator.parser)
 
         return textView
     }
@@ -57,7 +56,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         uiView.isScrollEnabled = false
         context.coordinator.updatingUIView = true
 
-        let highlightedText = HighlightedTextEditor.getHighlightedText(
+        let highlightedText = context.coordinator.parser.getHighlightedText(
             text: text,
             highlightRules: highlightRules
         )
@@ -80,7 +79,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         introspect(internals)
     }
 
-    private func runCustomize() {
+    private func runCustomize(_ parser: HighlightingTextEditorParser) {
         guard let customize = customize else { return }
         customize(parser)
     }
@@ -95,9 +94,11 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         var parent: HighlightedTextEditor
         var selectedTextRange: UITextRange?
         var updatingUIView = false
+        let parser: HighlightingTextEditorParser
 
         init(_ markdownEditorView: HighlightedTextEditor) {
             self.parent = markdownEditorView
+            self.parser = HighlightingTextEditorParser()
         }
 
         public func textViewDidChange(_ textView: UITextView) {
