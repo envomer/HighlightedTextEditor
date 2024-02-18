@@ -22,12 +22,14 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
     }
 
     let highlightRules: [HighlightRule]
+    let parser: HighlightingTextEditorParser
 
     private(set) var onEditingChanged: OnEditingChangedCallback?
     private(set) var onCommit: OnCommitCallback?
     private(set) var onTextChange: OnTextChangeCallback?
     private(set) var onSelectionChange: OnSelectionChangeCallback?
     private(set) var introspect: IntrospectCallback?
+    private(set) var customize: CustomizeCallback?
 
     public init(
         text: Binding<String>,
@@ -46,6 +48,7 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         textView.delegate = context.coordinator
         updateTextViewModifiers(textView)
         runIntrospect(textView)
+        runCustomize()
 
         return textView
     }
@@ -75,6 +78,11 @@ public struct HighlightedTextEditor: UIViewRepresentable, HighlightingTextEditor
         guard let introspect = introspect else { return }
         let internals = Internals(textView: textView, scrollView: nil)
         introspect(internals)
+    }
+
+    private func runCustomize() {
+        guard let customize = customize else { return }
+        customize(parser)
     }
 
     private func updateTextViewModifiers(_ textView: UITextView) {
@@ -150,6 +158,12 @@ public extension HighlightedTextEditor {
         var new = self
         new.onTextChange = callback
         return new
+    }
+
+    func customize(_ callback: @escaping CustomizeCallback) -> Self {
+        var editor = self
+        editor.customize = callback
+        return editor
     }
 }
 #endif
