@@ -78,7 +78,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
         introspect(internals)
     }
 
-    private func runCustomize(_ view: ScrollableTextView) {
+    private func runCustomize() {
         guard let customize = customize else { return }
         customize(parser)
     }
