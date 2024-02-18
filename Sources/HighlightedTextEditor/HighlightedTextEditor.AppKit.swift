@@ -25,7 +25,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
     }
 
     let highlightRules: [HighlightRule]
-    let highlightEditor: HighlightedTextEditor
+    let parser: HighlightingTextEditorParser
 
     private(set) var onEditingChanged: OnEditingChangedCallback?
     private(set) var onCommit: OnCommitCallback?
@@ -40,7 +40,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
     ) {
         _text = text
         self.highlightRules = highlightRules
-        self.highlightEditor = HighlightedTextEditor()
+        self.parser = HighlightingTextEditorParser()
     }
 
     public func makeCoordinator() -> Coordinator {
@@ -60,7 +60,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
         context.coordinator.updatingNSView = true
         let typingAttributes = view.textView.typingAttributes
 
-        let highlightedText = highlightEditor.getHighlightedText(
+        let highlightedText = parser.getHighlightedText(
             text: text,
             highlightRules: highlightRules
         )
@@ -80,7 +80,7 @@ public struct HighlightedTextEditor: NSViewRepresentable, HighlightingTextEditor
 
     private func runCustomize(_ view: ScrollableTextView) {
         guard let customize = customize else { return }
-        customize(highlightEditor)
+        customize(parser)
     }
 }
 

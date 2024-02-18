@@ -96,10 +96,10 @@ public typealias IntrospectCallback = (_ editor: HighlightedTextEditor.Internals
 public typealias EmptyCallback = () -> Void
 public typealias OnCommitCallback = EmptyCallback
 public typealias OnEditingChangedCallback = EmptyCallback
-public typealias CustomizeCallback = (_ editor: HighlightedTextEditor) -> Void
+public typealias CustomizeCallback = (_ editor: HighlightingTextEditorParser) -> Void
 public typealias OnTextChangeCallback = (_ editorContent: String) -> Void
 
-extension HighlightingTextEditor {
+class HighlightingTextEditorParser {
     var placeholderFont: SystemColorAlias { SystemColorAlias() }
     var editorFont: SystemFontAlias = defaultEditorFont
     var editorTextColor: SystemColorAlias = defaultEditorTextColor
